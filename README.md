@@ -24,22 +24,38 @@ An AI-powered **expert matching system** that scans **10,000+ synthetic global e
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/your-org/Nexus-Matcher.git
-cd Nexus-Matcher
+git clone https://github.com/Harshit-3114/nexus-matcher.git
+cd nexus-matcher
 
 # 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Add your Gemini API key to .env
+# 3. Build the vector index from the source dataset (~2 min)
+python build_index.py
+
+# 4. Add your Gemini API key to .env
 GEMINI_API_KEY=your_key_here
 
-# 4. Launch the app
+# 5. Launch the app
 streamlit run app.py
 ```
 
 ## 🗂️ Dataset
 
-The synthetic employee dataset (`dataset/`) contains **10,000+ profiles** across sectors like IT, Finance, CA, and Digital Marketing, pre-embedded and indexed with FAISS.
+The synthetic employee dataset (`dataset/cleaned_employee_llm_data.csv`) holds
+**10,000 profiles** across sectors like IT, Finance, CA and Digital Marketing,
+each with an `id` and a `text_for_llm` description.
+
+Two files are **generated** from that CSV and are therefore not committed:
+
+| File | Size | Rebuilt by |
+|---|---|---|
+| `dataset/employee_index.faiss` | ~15 MB | `build_index.py` |
+| `dataset/employee_metadata.pkl` | ~2.8 MB | `build_index.py` |
+
+`build_index.py` embeds every profile with `all-MiniLM-L6-v2` (384 dimensions)
+and writes a flat L2 index — lower distance means a closer match, which is the
+metric the app uses for the Synergy Score.
 
 ## 🎯 Usage
 
@@ -51,13 +67,19 @@ The synthetic employee dataset (`dataset/`) contains **10,000+ profiles** across
 ## 📁 Project Structure
 
 ```
-Nexus-Matcher/
+nexus-matcher/
 ├── app.py                      # Main Streamlit application
+├── build_index.py              # Rebuilds the FAISS index from the source CSV
 ├── requirements.txt            # Python dependencies
-├── .env                        # API key configuration
+├── .env                        # API key configuration (git-ignored)
 ├── dataset/
-│   ├── employee_index.faiss    # FAISS vector index
-│   ├── employee_metadata.pkl   # Employee metadata
-│   └── cleaned_employee_llm_data.csv  # Raw dataset
+│   ├── cleaned_employee_llm_data.csv  # Source dataset (10,000 profiles)
+│   ├── employee_index.faiss    # Generated - FAISS vector index
+│   └── employee_metadata.pkl   # Generated - profile metadata
 └── assets/                     # Static assets
 ```
+
+## 📄 License
+
+MIT — see [LICENSE](LICENSE).
+

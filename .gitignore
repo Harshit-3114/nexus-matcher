@@ -1,4 +1,18 @@
+# Environment / secrets
 .env
+.env.*
+!.env.example
+
+# Python
 __pycache__/
 *.pyc
+.Python
+
+# OS
 .DS_Store
+Thumbs.db
+
+# --- Generated artefacts ---
+# Rebuilt from dataset/cleaned_employee_llm_data.csv by build_index.py
+dataset/employee_index.faiss
+dataset/employee_metadata.pkl
